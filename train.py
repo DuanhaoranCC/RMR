@@ -5,19 +5,12 @@ from utils.load import load_acm, load_mag, load_freebase, make_sparse_eye, load_
 from utils.params import set_params, acm_params, aminer_params, freebase_params, mag_params, imdb_params, cite_params
 from utils.evaluate import evaluate
 from model import Cross_View
-from torch_geometric.loader import HGTLoader, NeighborLoader
-import matplotlib.pyplot as plt
-from sklearn.manifold import TSNE
-from sklearn.metrics import silhouette_score, normalized_mutual_info_score, adjusted_rand_score
-from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
-from sklearn.cluster import KMeans
-from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from torch_geometric import seed_everything
 
 
 # args = acm_params()
-# args = aminer_params()
-args = cite_params()
+args = aminer_params()
+# args = cite_params()
 # args = imdb_params()
 if torch.cuda.is_available():
     device = torch.device("cuda:0")
@@ -62,7 +55,7 @@ def main(space):
             data[data.main_node][f'{ratio}_train_mask'],
             data[data.main_node][f'{ratio}_val_mask'],
             data[data.main_node][f'{ratio}_test_mask'],
-            data[data.main_node].y[:, 1].long(),
+            data[data.main_node].y,
             device,
             data,
             0.01,
@@ -71,7 +64,6 @@ def main(space):
         )
 
 
-
 if __name__ == '__main__':
-    main({'attr1': 0.5, 'attr2': 0.0, 'epoch': 5000, 'feat': 0.0, 'lr': 1e-5,
-          'r1': 0.7, 'r2': 0.5, 'r3': 0.1, 'w': 0.0, 'alpha': 0.5, 'acc': 0.3972})
+    main({'alpha': 0.5, 'attr1': 0.0, 'attr2': 0.15, 'epoch': 6000, 'feat': 0.5,
+          'lr': 1e-5, 'r1': 0.3, 'r2': 0.3, 'r3': 0.3, 'w': 1e-5, 'acc': 0.8853})
