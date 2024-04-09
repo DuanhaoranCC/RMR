@@ -9,8 +9,18 @@ pip install -r requirements.txt
 
 ## Usage
 
+### Training model 
+
 We give an example for the Aminer dataset:
 
 ```python
 python train.py
+```
+
+### Tuning hyperparameters
+
+We give an example for the Aminer dataset:
+
+```python
+python train_tune.py
 ```
