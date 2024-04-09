@@ -65,10 +65,5 @@ def main(space):
 
 
 if __name__ == '__main__':
-    # Tune hyperparameters:
-    # s = [0.04, 0.08, 0.1, 0.12, 0.16, 0.2]
-    # for i in s:
-    #     main({'alpha': 0.4, 'attr1': 0.0, 'attr2': 0.15, 'epoch': 4000, 'feat': 0.5,
-    #           'lr': 5e-5, 'r1': 0.1, 'r2': i, 'r3': 0.55, 'w': 1e-5, 'acc': 0.8853})
     main({'alpha': 0.5, 'attr1': 0.0, 'attr2': 0.15, 'epoch': 6000, 'feat': 0.5,
           'lr': 1e-5, 'r1': 0.3, 'r2': 0.3, 'r3': 0.3, 'w': 1e-5, 'acc': 0.8853})
