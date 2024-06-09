@@ -22,6 +22,8 @@ You can modify the code to specify which dataset you wish to run.
 python train.py
 ```
 
+We provide model weights of Aminer dataset at https://drive.google.com/file/d/126IXw-dJGGS9VtjkoUbc6lHUYCblPlJu/view?usp=sharing.
+
 ## Cite
 ```
 @inproceedings{RMR,
