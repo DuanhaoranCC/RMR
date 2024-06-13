@@ -35,5 +35,3 @@ We provide model weights of Aminer dataset at https://drive.google.com/file/d/12
   year      = {2024}
 }
 ```
-## Contact
-If you have any questions, please feel free to contact me with hrduan07@gmail.com
