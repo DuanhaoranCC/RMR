@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
-from load import load_acm, load_Aminer_Large, load_imdb, load_cite, load_pubmed
-from params import acm_params, aminer_params, imdb_params, cite_params, pubmed_params
+from load import load_acm, load_Aminer_Large, load_imdb, load_pubmed
+from params import acm_params, aminer_params, imdb_params, pubmed_params
 from evaluate import evaluate
 from model import Cross_View
 from torch_geometric import seed_everything
@@ -11,7 +11,6 @@ warnings.filterwarnings("ignore")
 
 # args = acm_params()
 args = aminer_params()
-# args = cite_params()
 # args = imdb_params()
 # args = pubmed_params()
 if torch.cuda.is_available():
@@ -25,8 +24,6 @@ elif args.dataset == "aminer":
     load_data = load_Aminer_Large
 elif args.dataset == "imdb":
     load_data = load_imdb
-elif args.dataset == "cite":
-    load_data = load_cite
 elif args.dataset == "pubmed":
     load_data = load_pubmed
 
