@@ -397,3 +397,245 @@ def sample_edge_index(sample_size, edge_index):
 
     edge_index = torch.stack(edge_list)
     return edge_index.T
+
+def build_pubmed(n_label=300, n_conf=5000, n_author=800000, n_cite=800000, glove=False):
+    """
+    This is Implementation of Large Heterogeneous Graph Construction (Multi-Label)
+    Because Original Graph too Sparse, therefore sample a part data.
+    n_label represents sample label numbers
+    n_conf represents sample conference numbers
+    n_author represents sample author numbers
+    n_cite represents sample citation numbers
+    glove represents use Glove features for Paper if True.
+    """
+    term = {}
+    cite = {}
+    re_cite = {}
+    author = {}
+    conf = {}
+    conf_feat = []
+    model = KeyedVectors.load_word2vec_format('./data/glove.6B.100ff.txt', binary=False)
+    paths = "./data/PGB"
+    dirs = os.listdir(paths)
+    for index, name in enumerate(dirs):
+        path = os.path.join(paths, name)
+        file = open(path, 'r', encoding='utf-8')
+
+        for i in file.readlines():
+            da = json.loads(i)
+
+            if da["mesh"] != []:
+                for ter in da["mesh"]:
+                    if ter['term'] not in term:
+                        term[ter['term']] = 0
+                    else:
+                        term[ter['term']] += 1
+
+            if da["outbound_citations"] != []:
+                for ci in da["outbound_citations"]:
+                    if int(ci) not in cite:
+                        cite[int(ci)] = 0
+                    else:
+                        cite[int(ci)] += 1
+
+            # if da["inbound_citations"] != []:
+            #     for ci in da["inbound_citations"]:
+            #         if int(ci) not in re_cite:
+            #             re_cite[int(ci)] = 0
+            #         else:
+            #             re_cite[int(ci)] += 1
+
+            # Not evaluate Author Disambiguation Task. Therefore, simple cat author name.
+            for au in da["authors"]:
+                if au["middle"] != [] and au["first"].strip() + au["middle"][0].strip() + au[
+                    "last"].strip() not in author:
+                    author[au["first"].strip() + au["middle"][0].strip() + au["last"].strip()] = 0
+                if au["middle"] != [] and au["first"].strip() + au["middle"][0].strip() + au["last"].strip() in author:
+                    author[au["first"].strip() + au["middle"][0].strip() + au["last"].strip()] += 1
+                if au["middle"] == [] and au["first"].strip() + au["last"].strip() not in author:
+                    author[au["first"].strip() + au["last"].strip()] = 0
+                if au["middle"] == [] and au["first"].strip() + au["last"].strip() in author:
+                    author[au["first"].strip() + au["last"].strip()] += 1
+
+            ############################################################################
+            #         if da["outbound_citations"] != []:
+            #             for ci in da["outbound_citations"]:
+            #                 if int(ci) not in cite:
+            #                     cite[int(ci)] = len(cite.keys())
+            # if da["inbound_citations"] != []:
+            #     for ci in da["inbound_citations"]:
+            #         if int(ci) not in cite:
+            #             cite[int(ci)] = len(cite.keys())
+            #         for au in da["authors"]:
+            #             if au["middle"] != [] and au["first"].strip() + au["middle"][0].strip() + au["last"].strip() not in author:
+            #                 author[au["first"].strip() + au["middle"][0].strip() + au["last"].strip()] = len(author.keys())
+            #             elif au["first"].strip() + au["last"].strip() not in author:
+            #                 author[au["first"].strip() + au["last"].strip()] = len(author.keys())
+            #############################################################################
+
+            if da["journal"] not in conf:
+                conf[da["journal"]] = 0
+            else:
+                conf[da["journal"]] += 1
+                # word_vectors = [model[word] for word in da["journal"].split() if word in model]
+                # conf_feat.append([np.mean(word_vectors, axis=0)])
+        file.close()
+
+    paper_ref = []
+    paper_conf = []
+    paper_label = []
+    paper_author = []
+    term_dict = {}
+    term_label = {}
+    conf_dict = {}
+    conf_label = {}
+    author_dict = {}
+    author_label = {}
+    cite_dict = {}
+    cite_label = {}
+    abstract = []
+    year = []
+    label = {}
+
+    term2 = sorted(term.items(), key=lambda a: a[1], reverse=False)[-n_label:]
+    for index, t in enumerate(term2):
+        term_dict[t[0]] = len(term_dict.keys())
+        term_label[t[0]] = index
+
+    conf2 = sorted(conf.items(), key=lambda a: a[1], reverse=False)[-n_conf:-1]
+    print(sorted(conf.items(), key=lambda a: a[1], reverse=False)[-5000])
+    for index, t in enumerate(conf2):
+        conf_dict[t[0]] = len(conf_dict.keys())
+        conf_label[t[0]] = index
+
+    author2 = sorted(author.items(), key=lambda a: a[1], reverse=False)[-n_author:-1]
+    for index, t in enumerate(author2):
+        author_dict[t[0]] = len(author_dict.keys())
+        author_label[t[0]] = index
+
+    cite2 = sorted(cite.items(), key=lambda a: a[1], reverse=False)[-n_cite:]
+    for index, t in enumerate(cite2):
+        cite_dict[t[0]] = len(cite_dict.keys())
+        cite_label[t[0]] = index
+
+    index = 0
+    idd = 0
+    for _, name in enumerate(dirs):
+        path = os.path.join(paths, name)
+        file = open(path, 'r', encoding='utf-8')
+        print(path)
+        for i in file.readlines():
+            # print(index)
+            paper = json.loads(i)
+            if int(paper['pmid']) in cite_dict:
+                idd += 1
+            if paper["abstract"] == None:
+                ab = paper["title"]
+            else:
+                ab = paper["abstract"]
+
+            word_vectors = [model[word] for word in ab.split() if word in model]
+            if paper["authors"] == [] or paper["mesh"] == [] \
+                    or paper["year"] == None or paper["title"] == None or \
+                    paper["abstract"] == None or word_vectors == []:
+                continue
+            l = []
+            for ter in paper["mesh"]:
+                if ter['term'] in term_dict:
+                    l.append(term_label[ter['term']])
+            if l == [] or paper["journal"] not in conf_dict:
+                continue
+            abstract.append([np.mean(word_vectors, axis=0)])
+
+            for ci in paper["outbound_citations"]:
+                if int(ci) in cite_dict:
+                    paper_ref.append([index, cite_label[int(ci)]])
+            # for ci in paper["inbound_citations"]:
+            #     if int(ci) in cite:
+            #         paper_ref.append([cite[int(ci)], index])
+
+            label = np.zeros(n_label)
+            label[l] = 1
+            paper_label.append(label)
+            year.append([index, paper["year"]])
+            # if term[paper["mesh"][0]['term']] in ll:
+            #     paper_label.append([index, label[term[paper["mesh"][0]['term']]]])
+            #     year.append([index, paper["year"]])
+            # paper_label.append([index, term[paper["mesh"][0]['term']]])
+            paper_conf.append([index, conf_label[paper["journal"]]])
+            for auth in paper["authors"]:
+                if auth["middle"] != [] and auth["first"].strip() + auth["middle"][0].strip() + auth[
+                    "last"].strip() in author_dict:
+                    paper_author.append(
+                        [index, author_label[auth["first"].strip() + auth["middle"][0].strip() + auth["last"].strip()]])
+                elif auth["first"].strip() + auth["last"].strip() in author_dict:
+                    paper_author.append([index, author_label[auth["first"].strip() + auth["last"].strip()]])
+            index += 1
+        file.close()
+    print(idd)
+    data = HeteroData()
+    if glove:
+        data['P'].x = torch.from_numpy(np.array(abstract))
+        data['P'].x = torch.squeeze(data['P'].x)
+    else:
+        data['P'].x = make_sparse_eye(index)
+    data['A'].x = make_sparse_eye(n_author)
+    data['R'].x = make_sparse_eye(n_cite)
+    data['C'].x = make_sparse_eye(n_conf)
+    data[('P', 'A')].edge_index = torch.from_numpy(np.array(paper_author)).t().contiguous().long()
+    data[('P', 'R')].edge_index = torch.from_numpy(np.array(paper_ref)).t().contiguous().long()
+    data[('P', 'C')].edge_index = torch.from_numpy(np.array(paper_conf)).t().contiguous().long()
+    data[('A', 'P')].edge_index = data[('P', 'A')].edge_index[[1, 0]]
+    data[('R', 'P')].edge_index = data[('P', 'R')].edge_index[[1, 0]]
+    data[('C', 'P')].edge_index = data[('P', 'C')].edge_index[[1, 0]]
+    data['P'].y = torch.from_numpy(np.array(paper_label))
+    data['year'] = torch.from_numpy(np.array(year))
+    n = data['P'].y.size(0)
+    mask = torch.zeros(n)
+    mask[torch.nonzero(data['year'][:, 1] <= 2017)] = 1
+    print(torch.count_nonzero(mask == 1))
+    data['P']["train"] = mask.bool()
+    mask = torch.zeros(n)
+    mask[torch.nonzero(data['year'][:, 1] == 2018)] = 1
+    print(torch.count_nonzero(mask == 1))
+    data['P']["val"] = mask.bool()
+    mask = torch.zeros(n)
+    mask[torch.nonzero(data['year'][:, 1] >= 2019)] = 1
+    print(torch.count_nonzero(mask == 1))
+    data['P']["test"] = mask.bool()
+    schema_dict = {
+        ('A', 'P'): None,
+        ('R', 'P'): None,
+        ('C', 'P'): None
+    }
+    data['schema_dict'] = schema_dict
+    data['schema_dict1'] = {
+        ('A', 'P'): None,
+        ('R', 'P'): None
+    }
+    data['schema_dict2'] = {
+        ('A', 'P'): None,
+        ('C', 'P'): None
+    }
+    data['schema_dict3'] = {
+        ('R', 'P'): None,
+        ('C', 'P'): None
+    }
+    data['main_node'] = 'P'
+    data['use_nodes'] = ('P', 'A', 'R', 'C')
+    data['mp'] = {
+        ('P', 'A'): None,
+        ('P', 'R'): None,
+        ('P', 'C'): None
+    }
+    print(data['year'][:, 1].max())
+    print(data)
+    pickle.dump(data, open("PubMed.pk", "wb"))
+    return data
+
+def load_pubmed():
+    path = "./PubMed.pk"
+    with open(path, "rb") as f:
+        data = pickle.load(f)
+
+    return data
