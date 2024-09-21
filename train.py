@@ -118,3 +118,14 @@ def main(space):
                 0,
                 args.dataset,
             )
+if __name__ == '__main__':
+    # ACM
+    # main({'attr1': 0.0, 'attr2': 0.0, 'epoch': 200, 'feat': 0.8, 'lr': 0.005, 'r1': 0.9, 'r2': 0.3, 'r3': 0.0,
+    #       'w': 0.0005})
+    # IMDB
+    # main({'attr1': 0.0, 'attr2': 0.3, 'epoch': 5500,
+    #       'feat': 0.55, 'r1': 0.9, 'r2': 0.8, 'r3': 0.0, 'w': 5e-5, 'lr': 5e-5, 'acc': 0.5037})
+    # Aminer
+    # main({'alpha': 0.4, 'attr1': 0.0, 'attr2': 0.15, 'epoch': 4000, 'feat': 0.5,
+    #       'lr': 5e-5, 'r1': 0.1, 'r2': 0.15, 'r3': 0.55, 'w': 1e-5, 'acc': 0.8853})
+    main(args)
