@@ -34,7 +34,7 @@ We provide model weights of Aminer dataset at https://drive.google.com/file/d/12
   title     = {Reserving-Masking-Reconstruction Model for Self-Supervised Heterogeneous Graph Representation},
   booktitle = {{KDD} '24: The 30th {ACM} {SIGKDD} Conference on Knowledge Discovery
                and Data Mining, Barcelona, Spain, August 25-29, 2024},
-  pages     = {--},
+  pages     = {689-700},
   year      = {2024}
 }
 ```
