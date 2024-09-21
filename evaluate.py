@@ -69,37 +69,49 @@ def mean_reciprocal_rank(rs):
 
 def evaluate(embeds, train_mask, val_mask, test_mask, label, device, data, lr, wd, name):
     num_features = embeds.shape[1]
-    num_classes = label.max() + 1
-    xent = nn.CrossEntropyLoss()
     embeds = embeds.to(device)
     label = label.to(device)
 
     if name == 'aminer':
+        num_classes = label.max() + 1
+        xent = nn.CrossEntropyLoss()
         embeds = embeds[data.label[:, 0]]
-
-    if name == 'cite':
+        # embeds = embeds[data['P'].y[:, 0]]
+    elif name == 'cite':
+        num_classes = label.max() + 1
+        xent = nn.CrossEntropyLoss()
+        num_classes = label.size(1)
+        embeds = embeds[data['P'].y[:, 0]]
         train_lbls = data['P'].y[:, 1][train_mask]
         val_lbls = data['P'].y[:, 1][val_mask]
         test_lbls = data['P'].y[:, 1][test_mask]
-        num_classes = data['P'].y[:, 1].max() + 1
-        train_embs = embeds[data['P'].y[:, 1]][train_mask]
-        val_embs = embeds[data['P'].y[:, 1]][val_mask]
-        test_embs = embeds[data['P'].y[:, 1]][test_mask]
-    else:
-        train_lbls = label[train_mask]
-        val_lbls = label[val_mask]
-        test_lbls = label[test_mask]
-        train_embs = embeds[train_mask]
-        val_embs = embeds[val_mask]
-        test_embs = embeds[test_mask]
+    elif name == 'pubmed':
+        num_classes = label.size(1)
+        xent = torch.nn.BCEWithLogitsLoss()
+        embeds = embeds.to(device)
+        label = label.to(device).float()
 
+    train_lbls = label[train_mask]
+    val_lbls = label[val_mask]
+    test_lbls = label[test_mask]
+    train_embs = embeds[train_mask]
+    val_embs = embeds[val_mask]
+    test_embs = embeds[test_mask]
+
+    # if name == 'cite':
+    #     train_lbls = train_lbls.float()
+    #     # dataset = EvaData(train_embs, train_lbls)
+    #     # da = DataLoader(dataset, batch_size=50000, shuffle=True, num_workers=0)
+    #     val_lbls = val_lbls.float()
+    #     test_lbls = test_lbls.float()
+
+    accs = []
     micro_f1s = []
     macro_f1s = []
     macro_f1s_val = []
     auc_score_list = []
-    logits_list = []
 
-    for _ in range(10):
+    for _ in range(1):
         log = LogReg(num_features, num_classes).to(device)
         opt = torch.optim.Adam(log.parameters(), lr=lr, weight_decay=wd)
 
@@ -107,29 +119,49 @@ def evaluate(embeds, train_mask, val_mask, test_mask, label, device, data, lr, w
         test_micro_f1s = []
         val_macro_f1s = []
         test_macro_f1s = []
+        logits_list = []
         train_embs = train_embs.to(device)
         train_lbls = train_lbls.to(device)
         for i in range(200):
+            # train
+            # for index, (train_x, train_y) in enumerate(da):
+            #     log.train()
+            #     opt.zero_grad()
+            #     logits = log(train_x.to(device))
+            #     loss = xent(logits, train_y.to(device))
+            #     loss.backward()
+            #     opt.step()
+
             log.train()
             opt.zero_grad()
             logits = log(train_embs)
             loss = xent(logits, train_lbls)
             loss.backward()
             opt.step()
+
             ##########################################################################
+            # Val
             logits = log(val_embs.to(device))
-            preds = torch.argmax(logits, dim=1)
-            val_f1_macro = f1_score(val_lbls.cpu(), preds.cpu(), average='macro')
-            val_f1_micro = f1_score(val_lbls.cpu(), preds.cpu(), average='micro')
+            if name == 'pubmed':
+                preds = (logits > 0).float().cpu()
+            else:
+                preds = torch.argmax(logits, dim=1).cpu()
+            val_f1_macro = f1_score(val_lbls.cpu().numpy(), preds, average='macro')
+            val_f1_micro = f1_score(val_lbls.cpu().numpy(), preds, average='micro')
 
             val_macro_f1s.append(val_f1_macro)
             val_micro_f1s.append(val_f1_micro)
 
+            # #####################################################################
             # Test
             logits = log(test_embs)
-            preds = torch.argmax(logits, dim=1)
-            test_f1_macro = f1_score(test_lbls.cpu(), preds.cpu(), average='macro')
-            test_f1_micro = f1_score(test_lbls.cpu(), preds.cpu(), average='micro')
+
+            if name == 'pubmed':
+                preds = (logits > 0).float().cpu()
+            else:
+                preds = torch.argmax(logits, dim=1).cpu()
+            test_f1_macro = f1_score(test_lbls.cpu(), preds, average='macro')
+            test_f1_micro = f1_score(test_lbls.cpu(), preds, average='micro')
 
             test_macro_f1s.append(test_f1_macro)
             test_micro_f1s.append(test_f1_micro)
@@ -138,6 +170,7 @@ def evaluate(embeds, train_mask, val_mask, test_mask, label, device, data, lr, w
         max_iter = val_macro_f1s.index(max(val_macro_f1s))
         macro_f1s.append(test_macro_f1s[max_iter])
         macro_f1s_val.append(val_macro_f1s[max_iter])
+        # #################################################################################
         max_iter = val_micro_f1s.index(max(val_micro_f1s))
         micro_f1s.append(test_micro_f1s[max_iter])
         # # auc
