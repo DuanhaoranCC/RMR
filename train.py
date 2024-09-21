@@ -128,4 +128,7 @@ if __name__ == '__main__':
     # Aminer
     # main({'alpha': 0.4, 'attr1': 0.0, 'attr2': 0.15, 'epoch': 4000, 'feat': 0.5,
     #       'lr': 5e-5, 'r1': 0.1, 'r2': 0.15, 'r3': 0.55, 'w': 1e-5, 'acc': 0.8853})
+    # PubMed
+    # main({'attr1': 0.0, 'attr2': 0.6, 'epoch': 3000, 'feat': 0.3, 'lr': 1e-5,
+    #       'r1': 0.2, 'r2': 0.1, 'r3': 0.1, 'w': 0.0, 'acc': 0.3286})
     main(args)
