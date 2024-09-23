@@ -503,7 +503,6 @@ def build_pubmed(n_label=300, n_conf=5000, n_author=800000, n_cite=800000, glove
         term_label[t[0]] = index
 
     conf2 = sorted(conf.items(), key=lambda a: a[1], reverse=False)[-n_conf:-1]
-    print(sorted(conf.items(), key=lambda a: a[1], reverse=False)[-5000])
     for index, t in enumerate(conf2):
         conf_dict[t[0]] = len(conf_dict.keys())
         conf_label[t[0]] = index
