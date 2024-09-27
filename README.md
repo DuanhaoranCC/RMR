@@ -33,6 +33,7 @@ We hope to see more methods tested on the **PubMed dataset**. (Based PGB: A PubM
 3. **Task Difficulty**:
    - The task difficulty is considered **high**, as indicated by a low **F1 score** of approximately **30%**.
 
+You can run the build_pubmed function at load.py.
 
 ## Training model 
 
