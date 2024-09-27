@@ -15,7 +15,24 @@ All our experiments are performed on a computer with Intel(R) Core(TM) i9-11900K
 We provide datasets for two **Small Heterogeneous Graph** ACM, IMDB, and three **Large Heterogeneous Graph** Aminer PubMed DBLP.
 
 PubMed has a too-large size, We provide the PubMed dataset at [https://drive.google.com/file/d/126IXw-dJGGS9VtjkoUbc6lHUYCblPlJu/view?usp=sharing](https://drive.google.com/drive/folders/1aPX6VvRYbemhHKfVtr0ktq1wLAMaorjr?usp=drive_link).
-DBLP is Citation-network V1 at https://www.aminer.cn/citation
+DBLP is Citation-network V1 at https://www.aminer.cn/citation.
+
+### Explanation of the PubMed Dataset
+
+We hope to see more methods tested on the **PubMed dataset**. (Based PGB: A PubMed Graph Benchmark for Heterogeneous Network Representation Learning, CIKM2023)
+
+1. **Data Splitting**:
+   - The dataset is divided by **year**:
+     - Papers published **before 2018** are used as the **training set**.
+     - Papers published **between 2018 and 2019** are used as the **validation set**.
+     - Papers published **after 2019** are used as the **test set**.
+
+2. **Task Type**:
+   - The task is a **multi-class classification** task, as each article can have multiple **MeSH** keywords.
+
+3. **Task Difficulty**:
+   - The task difficulty is considered **high**, as indicated by a low **F1 score** of approximately **30%**.
+
 
 ## Training model 
 
