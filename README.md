@@ -32,7 +32,7 @@ We hope to see more methods tested on the **PubMed dataset**. (Based PGB: A PubM
 3. **Task Difficulty**:
    - The task difficulty is considered **high**, as indicated by a low **F1 score** of approximately **30%**.
 
-PubMed has a too-large size, We provide the PubMed dataset at [https://drive.google.com/file/d/126IXw-dJGGS9VtjkoUbc6lHUYCblPlJu/view?usp=sharing](https://drive.google.com/drive/folders/1aPX6VvRYbemhHKfVtr0ktq1wLAMaorjr?usp=drive_link).
+PubMed has a too-large size, We provide the sampling PubMed dataset at [https://drive.google.com/file/d/126IXw-dJGGS9VtjkoUbc6lHUYCblPlJu/view?usp=sharing](https://drive.google.com/drive/folders/1aPX6VvRYbemhHKfVtr0ktq1wLAMaorjr?usp=drive_link).
 You can run the build_pubmed function at load.py.
 
 ## Training model 
