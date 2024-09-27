@@ -14,7 +14,6 @@ All our experiments are performed on a computer with Intel(R) Core(TM) i9-11900K
 ## Dataset
 We provide datasets for two **Small Heterogeneous Graph** ACM, IMDB, and three **Large Heterogeneous Graph** Aminer PubMed DBLP.
 
-PubMed has a too-large size, We provide the PubMed dataset at [https://drive.google.com/file/d/126IXw-dJGGS9VtjkoUbc6lHUYCblPlJu/view?usp=sharing](https://drive.google.com/drive/folders/1aPX6VvRYbemhHKfVtr0ktq1wLAMaorjr?usp=drive_link).
 DBLP is Citation-network V1 at https://www.aminer.cn/citation.
 
 ### Explanation of the PubMed Dataset
@@ -33,6 +32,7 @@ We hope to see more methods tested on the **PubMed dataset**. (Based PGB: A PubM
 3. **Task Difficulty**:
    - The task difficulty is considered **high**, as indicated by a low **F1 score** of approximately **30%**.
 
+PubMed has a too-large size, We provide the PubMed dataset at [https://drive.google.com/file/d/126IXw-dJGGS9VtjkoUbc6lHUYCblPlJu/view?usp=sharing](https://drive.google.com/drive/folders/1aPX6VvRYbemhHKfVtr0ktq1wLAMaorjr?usp=drive_link).
 You can run the build_pubmed function at load.py.
 
 ## Training model 
