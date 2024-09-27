@@ -14,8 +14,6 @@ All our experiments are performed on a computer with Intel(R) Core(TM) i9-11900K
 ## Dataset
 We provide datasets for two **Small Heterogeneous Graph** ACM, IMDB, and three **Large Heterogeneous Graph** Aminer PubMed DBLP.
 
-DBLP is Citation-network V1 at https://www.aminer.cn/citation.
-
 ### Explanation of the PubMed Dataset
 
 We hope to see more methods tested on the **PubMed dataset**. (Based PGB: A PubMed Graph Benchmark for Heterogeneous Network Representation Learning, CIKM2023)
@@ -34,6 +32,10 @@ We hope to see more methods tested on the **PubMed dataset**. (Based PGB: A PubM
 
 PubMed has a too-large size, We provide the sampling PubMed dataset at [https://drive.google.com/file/d/126IXw-dJGGS9VtjkoUbc6lHUYCblPlJu/view?usp=sharing](https://drive.google.com/drive/folders/1aPX6VvRYbemhHKfVtr0ktq1wLAMaorjr?usp=drive_link).
 You can run the build_pubmed function at load.py.
+
+### Explanation of the DBLP Dataset
+Coming soon
+DBLP is Citation-network V1 at https://www.aminer.cn/citation.
 
 ## Training model 
 
