@@ -11,9 +11,6 @@ pip install -r requirements.txt
 We provide datasets for two **Small Heterogeneous Graph** ACM, IMDB, and three **Large Heterogeneous Graph** Aminer PubMed DBLP.
 
 ### Explanation of the PubMed Dataset
-
-We hope to see more methods tested on the **PubMed dataset**. (Based PGB: A PubMed Graph Benchmark for Heterogeneous Network Representation Learning, CIKM2023)
-
 1. **Data Splitting**:
    - The dataset is divided by **year**:
      - Papers published **before 2018** are used as the **training set**.
